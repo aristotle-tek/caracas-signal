@@ -5,15 +5,13 @@ Replication code for the working paper 'The Caracas Signal: Forensic Evidence of
 
 ## Key Findings
 
-1.  The Leak: Energy equities (XLE) decoupled from crude oil futures (CL=F) starting at 14:55 EST on Jan 2, roughly 13 hours before the operation commenced.
-2.  The Scope (Signal): While Defense stocks (ITA) rallied (+3.41%), Shipping stocks (FRO) crashed (-5.68%). 
-    * *Interpretation:* This divergence indicates the "smart money" priced in a surgical, stabilizing strike (which lowers shipping risk) rather than a protracted conflict (which typically raises shipping risk premiums).
-3.  Magnitude: The spread between equities and commodities reached +1.94%, .a statistical outlier measuring 2.69 standard deviations above the mean of baseline intraday volatility.
+1.  The Leak: Energy equities (XLE) decoupled from crude oil futures (CL=F) on Jan 2, before the operation commenced on Jan 3.
+2.  The Scope (Signal): While defense stocks (ITA) rallied (+3.41%), shipping stocks (e.g. FRO) crashed (-5.68%). 
+    * *Interpretation:* This divergence is consistent with the idea of some expecting a surgical, stabilizing strike (which lowers shipping risk) rather than a protracted conflict (which typically raises shipping risk premiums).
 
+The chart below visualizes the Jan 2 Cumulative Abnormal Returns.
 
-The chart below visualizes the "decoupling" moment where energy stocks broke away from their historical correlation with oil futures.
-
-![Sector-Commodity Decoupling](out/fig1.png)
+![CAR](out/fig1.png)
 
 
 ## Repository Structure
@@ -21,44 +19,32 @@ The chart below visualizes the "decoupling" moment where energy stocks broke awa
 ```text
 /caracas-signal/
 │
-├── data/                    # store parquet files here
-├── out/                     # generated output
+├── data/                      # Non Yahoo-finance data
+├── out/                       # generated output
 ├── src/
-│   ├── data_loader.py       # Data acquisition & caching
-│   ├── forensics.py         # Main anomaly detection script
-│   ├── plots.py             # Chart generation
-│   ├── historical_control.py# Event study comparison script
-│   ├── factor_model.py      # Intraday regression model
-│   ├── polymarket_control.py# Prediction market analysis
-│   └── models.py            # Daily beta calculations
-│
+│   ├── data_loader.py         # Data acquisition & caching
+│   ├── plots.py            # Main analysis and plots
+│   ├── historical_control.py  # Event study comparison script
+│   ├── spread_distribution.py # Figure 3
+│   ├── polymarket_control.py  # Figure 4 
+│   └── sector_spdr_check.py  # Figure 5
 └── requirements.txt
 ```
 
 
 ## Replication
 
-To reproduce the findings and generate the charts:
 
 ```bash
-# 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. download data (~30 days of 5m data)
+
+# create intraday caches (subject to Yahoo limits)
 python src/data_loader.py
 
-# 3. Run analysis (Decoupling & shipping basket)
-python src/forensics.py
-
-# 4. Run robustness checks (Factor model, historical, Polymarket)
-python src/factor_model.py
-python src/historical_control.py
-python src/polymarket_control.py
-
-# 5. Plots
-python src/plots.py
+# run analysis and generate plots
+python run_all.py
 ```
-
 
 
 ## Citation and License

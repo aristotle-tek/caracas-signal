@@ -1,0 +1,135 @@
+{
+  "event_window": {
+    "date": "2026-01-02",
+    "start_time": "09:30",
+    "end_time": "16:00",
+    "timezone": "America/New_York"
+  },
+  "baseline_window": {
+    "start_date": "2025-11-15",
+    "end_date": "2025-12-31",
+    "interval": "5m"
+  },
+  "primary_spec": {
+    "frequency": "5m",
+    "model": "SPY + CL=F",
+    "statistic": "end-of-day CAR"
+  },
+  "robustness": [
+    "3-factor: SPY + WTI + Brent (BZ=F)",
+    "risk/FX: SPY + WTI + VIX + UUP",
+    "oil ETFs: SPY + USO and SPY + BNO",
+    "lagged factors: SPY/WTI lag 1"
+  ],
+  "tickers": {
+    "primary": ["XLE", "SPY", "CL=F"],
+    "robustness": ["BZ=F", "VIX", "UUP", "USO", "BNO", "VDE", "XOP", "ITA", "FRO", "NAT", "STNG", "BDRY"]
+  },
+  "inputs_required": [
+    "data/raw_parquet/XLE_*_5m.parquet",
+    "data/raw_parquet/SPY_*_5m.parquet",
+    "data/raw_parquet/CLF_*_5m.parquet",
+    "data/raw_parquet/BZF_*_5m.parquet",
+    "data/raw_parquet/VIX_*_5m.parquet",
+    "data/raw_parquet/UUP_*_5m.parquet",
+    "data/raw_parquet/USO_*_5m.parquet",
+    "data/raw_parquet/BNO_*_5m.parquet",
+    "data/raw_parquet/XLE_*_1m.parquet",
+    "data/raw_parquet/SPY_*_1m.parquet",
+    "data/raw_parquet/CLF_*_1m.parquet",
+    "data/raw_parquet/BZF_*_1m.parquet",
+    "data/raw_parquet/VIX_*_1m.parquet",
+    "data/raw_parquet/UUP_*_1m.parquet",
+    "data/ucdp_ged.csv",
+    "data/eia_top10_oil.csv",
+    "data/historical_event_universe.csv",
+    "data/polymarket/polymarket-price-data-07-09-2025-07-01-2026-1767785813564.csv"
+  ],
+  "outputs_expected": [
+    "out/Figure_2_Intraday_CAR.png",
+    "out/Spread_Distribution_Chart.png",
+    "out/Polymarket_Chart.png",
+    "out/Historical_Control_Scatter.png",
+    "out/Historical_Control_Scatter_OilQ4.png",
+    "out/Sector_SPDR_Check.png",
+    "out/Shipping_Pretrend_2024_2025.png",
+    "out/historical_event_alpha.csv",
+    "out/historical_regression.txt",
+    "out/shipping_freight_check.txt",
+    "out/xle_car_summary.txt",
+    "out/xle_car_summary_3f.txt",
+    "out/xle_car_summary_5m.txt",
+    "out/xle_car_summary_lags.txt",
+    "out/xle_car_summary_riskfx.txt",
+    "out/xle_car_summary_uso.txt",
+    "out/xle_car_summary_bno.txt",
+    "out/spread_placebo_summary.txt",
+    "out/sector_spdr_check.csv",
+    "out/shipping_pretrend_2024_2025.csv"
+  ],
+  "steps": [
+    {
+      "name": "plots",
+      "command": "python src/plots.py",
+      "outputs": [
+        "out/Figure_2_Intraday_CAR.png",
+        "out/xle_car_summary.txt",
+        "out/xle_car_summary_3f.txt",
+        "out/xle_car_summary_5m.txt",
+        "out/xle_car_summary_lags.txt",
+        "out/xle_car_summary_riskfx.txt",
+        "out/xle_car_summary_uso.txt",
+        "out/xle_car_summary_bno.txt"
+      ],
+      "requires_network": false
+    },
+    {
+      "name": "spread_control",
+      "command": "python src/spread_control.py",
+      "outputs": [
+        "out/Spread_Distribution_Chart.png",
+        "out/spread_placebo_summary.txt"
+      ],
+      "requires_network": false
+    },
+    {
+      "name": "polymarket_control",
+      "command": "python src/polymarket_control.py",
+      "outputs": [
+        "out/Polymarket_Chart.png"
+      ],
+      "requires_network": false
+    },
+    {
+      "name": "historical_control",
+      "command": "python src/historical_control.py",
+      "outputs": [
+        "out/Historical_Control_Scatter.png",
+        "out/Historical_Control_Scatter_OilQ4.png",
+        "out/historical_event_alpha.csv",
+        "out/historical_regression.txt",
+        "out/shipping_freight_check.txt"
+      ],
+      "requires_network": true
+    },
+    {
+      "name": "sector_spdr_check",
+      "command": "python src/sector_spdr_check.py",
+      "outputs": [
+        "out/Sector_SPDR_Check.png",
+        "out/sector_spdr_check.csv"
+      ],
+      "requires_network": true
+    },
+    {
+      "name": "shipping_pretrend",
+      "command": "python src/shipping_pretrend.py",
+      "outputs": [
+        "out/Shipping_Pretrend_2024_2025.png",
+        "out/shipping_pretrend_2024_2025.csv"
+      ],
+      "requires_network": true
+    }
+  ],
+  "allow_missing_inputs": false
+}
